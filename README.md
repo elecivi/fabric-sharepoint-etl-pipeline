@@ -79,6 +79,20 @@ Transform Excel
 Copy Lakehouse -> SharePoint
 ```
 
+### Microsoft Fabric Pipeline
+
+The workflow is orchestrated through a Microsoft Fabric Data Pipeline composed of three sequential, success-dependent activities.
+
+![Microsoft Fabric Pipeline](docs/images/Pipeline.png)
+
+The pipeline consists of three main stages:
+
+1. **SharePoint to Lakehouse** — copies the source Excel workbook from SharePoint into the Fabric Lakehouse staging area.
+2. **Transformation** — processes, validates, and formats the workbook using Python.
+3. **Lakehouse to SharePoint** — publishes the validated Excel output back to the SharePoint location.
+
+Each downstream activity is triggered only after the successful completion of the previous activity, preventing invalid or incomplete outputs from being distributed.
+
 ### 1. SharePoint to Lakehouse
 
 The original Excel workbook is copied from the SharePoint-backed Microsoft Teams folder into a Microsoft Fabric Lakehouse.
