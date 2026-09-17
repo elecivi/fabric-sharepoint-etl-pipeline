@@ -95,11 +95,10 @@ Each downstream activity is triggered only after the successful completion of th
 
 ### 1. SharePoint to Lakehouse
 
-The original Excel workbook is copied from the SharePoint-backed Microsoft Teams folder into a Microsoft Fabric Lakehouse.
+The original Excel workbook is temporary copied from the SharePoint-backed Microsoft Teams folder into a Microsoft Fabric Lakehouse
+- the Lakehouse acts as a temporary staging area between the source system and the transformation layer.
 
-The workbook is copied in binary format so that Fabric does not attempt to interpret or modify the Excel structure during ingestion.
-
-The Lakehouse acts as a temporary staging area between the source system and the transformation layer.
+The workbook is copied in binary format, so that Fabric does not attempt to interpret or modify the Excel structure during ingestion.
 
 ### 2. Transformation
 
@@ -122,19 +121,34 @@ No processing date is hardcoded.
 
 After successful transformation and validation, the generated Excel workbook is copied from the Lakehouse back to the SharePoint / Teams folder.
 
-The downstream copy activity is configured to execute only after the transformation activity succeeds.
-
-This prevents an unsuccessful transformation from being distributed as a valid output file.
+The downstream copy activity is configured to execute only after the transformation activity succeeds
+- this prevents an unsuccessful transformation from being distributed as a valid output file.
 
 ## Transformation Logic
 
-The transformation performs the following operations.
+The transformation performs the following operations:
 
 ### Input Validation
 
 The notebook first verifies that the expected input workbook exists in the Lakehouse.
 
 If the input file is unavailable, processing should not continue.
+
+```python
+import os
+
+input_file = "/lakehouse/default/Files/Temp/Acquisition.xlsx"
+
+if not os.path.exists(input_file):
+    raise FileNotFoundError(f"Input file not found: {input_file}")
+
+print("Input file found:", input_file)
+print(
+    "File size:",
+    round(os.path.getsize(input_file) / 1024 / 1024, 2),
+    "MB"
+)
+```
 
 ### Header Handling
 
