@@ -285,18 +285,6 @@ The pipeline does not assume that the source export always contains valid data.
 
 The transformation explicitly verifies the expected processing date and row availability before producing the final output.
 
-## Performance Investigation
-
-During development, a significant difference was observed between the first and subsequent Notebook executions.
-
-A first pipeline execution experienced a substantially longer Notebook activity duration, while a subsequent execution completed much faster.
-
-Spark monitoring showed that the actual workload execution represented only a relatively small portion of the total observed pipeline duration.
-
-This suggests that Spark environment or session initialization may introduce significant cold-start overhead.
-
-Because the workload consists of a relatively small Excel file and lightweight Python transformations, distributed Spark processing is significantly more powerful than the transformation itself requires.
-
 ### Production Optimization
 
 Before considering the workflow production-ready, the following options should be investigated:
