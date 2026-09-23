@@ -152,9 +152,24 @@ print(
 
 ### Header Handling
 
-The source workbook contains introductory rows before the actual table headers.
+The source Excel workbook contains empty rows before the actual table headers
+- to ensure the data is loaded correctly, the transformation skips these rows and uses the fourth Excel row as the dataframe header by setting `header=3`
 
-The transformation skips these rows and uses the correct Excel row as the dataframe header.
+The loaded dataframe is then inspected to verify the number of rows, columns, column names, and a sample of the imported data
+
+```python
+df = pd.read_excel(input_file, header=3)
+
+print("Numero righe dati:", len(df))
+print("Numero colonne:", len(df.columns))
+
+print("\nIntestazioni:")
+print(df.columns.tolist())
+
+display(df.head())
+```
+
+This ensures that the dataframe is created with the structure required by the downstream Power BI semantic model and the reports built on top of it.
 
 ### Column Cleanup
 
