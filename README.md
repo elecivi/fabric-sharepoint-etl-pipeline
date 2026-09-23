@@ -173,9 +173,19 @@ This ensures that the dataframe is created with the structure required by the do
 
 ### Column Cleanup
 
-Unused leading columns are removed from the source dataset.
+Similarly to the previous step, empty columns are removed from the source dataset as well
 
-After the cleanup, `Calendar Date` becomes the first column of the output dataset.
+```python
+df = df.drop(columns=["Unnamed: 0", "Unnamed: 1"])
+
+print("Numero colonne dopo la pulizia:", len(df.columns))
+print("\nIntestazioni:")
+print(df.columns.tolist())
+
+display(df.head())
+```
+
+After the cleanup, `Calendar Date` becomes the first column of the output dataset
 
 ### Date Conversion
 
