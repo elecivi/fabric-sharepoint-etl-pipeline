@@ -368,21 +368,6 @@ fabric-sharepoint-etl-pipeline/
     `-- test_transformation.py
 ```
 
-## Planned Improvements
-
-Future iterations of the project may include:
-
-- synthetic input and output datasets;
-- automated transformation tests;
-- improved logging;
-- pipeline monitoring;
-- configurable processing dates;
-- production-safe file replacement;
-- improved failure handling;
-- performance optimization;
-- architecture diagrams;
-- deployment documentation.
-
 ## Data & Privacy
 
 This repository is a fully anonymized demonstration inspired by a real-world business process.
