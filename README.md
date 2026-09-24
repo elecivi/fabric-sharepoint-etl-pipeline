@@ -189,17 +189,35 @@ After the cleanup, `Calendar Date` becomes the first column of the output datase
 
 ### Date Conversion
 
-`Calendar Date` is converted to a proper datetime datatype before filtering.
+The source Excel file contains `Calendar Date` values in the U.S. date format (month/day/year).
+Since this file is used as the basis for downstream reports and visualizations, incorrect date interpretation could lead to filtering errors and inaccurate results.
+
+To avoid this, `Calendar Date` is explicitly converted to a proper datetime datatype, before any filtering or transformation is applied:
+
+```python
+df["Calendar Date"] = pd.to_datetime(
+    df["Calendar Date"],
+    errors="coerce"
+)
+```
+
+This ensures that the pipeline works with actual date values, rather than relying on how dates are displayed or formatted in Excel.
 
 ### Dynamic Processing Date
 
-The notebook calculates the required date dynamically:
+The pipeline is designed to process data for the previous day. Instead of hardcoding a specific date, the notebook dynamically calculates `TODAY - 1` each time it runs:
 
-```text
-target_date = current_date - 1 day
+```python
+from datetime import date, timedelta
+
+target_date = pd.Timestamp(
+    date.today() - timedelta(days=1)
+)
 ```
 
-This allows the same workflow to run every day without manually changing the processing date.
+The resulting `target_date` is then used by the filtering logic to select the relevant daily data.
+
+This makes the notebook reusable for scheduled executions without requiring manual date updates.
 
 ### Daily Filtering
 
