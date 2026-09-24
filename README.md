@@ -357,42 +357,6 @@ Before production deployment, the following items remain to be completed:
 - validate the workflow with additional daily source files;
 - separate development/test configuration from production configuration.
 
-## Repository Structure
-
-The repository will be expanded incrementally as the project develops.
-
-The planned structure is:
-
-```text
-fabric-sharepoint-etl-pipeline/
-|
-|-- README.md
-|-- LICENSE
-|-- .gitignore
-|
-|-- docs/
-|   |-- architecture.md
-|   |-- pipeline-setup.md
-|   |-- transformation-logic.md
-|   |-- operations-runbook.md
-|   |-- troubleshooting.md
-|   `-- performance-notes.md
-|
-|-- notebooks/
-|   `-- transformation-demo.ipynb
-|
-|-- sample-data/
-|   |-- sample_input.xlsx
-|   `-- sample_output.xlsx
-|
-|-- diagrams/
-|   |-- architecture.png
-|   `-- pipeline-flow.png
-|
-`-- tests/
-    `-- test_transformation.py
-```
-
 ## Data & Privacy
 
 This repository is a fully anonymized demonstration inspired by a real-world business process.
