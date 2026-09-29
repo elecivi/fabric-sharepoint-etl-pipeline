@@ -230,8 +230,29 @@ During development testing, the source workbook contained approximately 54,000 h
 Before generating the final workbook, the transformation validates that:
 
 - the filtered dataset is not empty;
+
+```python
+date_presenti = df_filtered["Calendar Date"].dt.date.unique()
+
+print("Date presenti nel file filtrato:", date_presenti)
+print("Numero date diverse:", len(date_presenti))
+
+if len(df_filtered) == 0:
+    raise ValueError("ERRORE: nessuna riga trovata per TODAY - 1")
+```
+  
 - only one calendar date remains;
-- the remaining date matches the expected previous-day value.
+
+```python
+if len(date_presenti) != 1 or date_presenti[0] != target_date.date():
+    raise ValueError("ERRORE: il filtro Calendar Date non ha prodotto il risultato atteso")
+```
+
+- the remaining date matches the expected previous-day value
+
+```python
+print("Controllo superato: il file contiene solo i dati di TODAY - 1")
+```
 
 If these conditions are not satisfied, the transformation raises an error instead of silently producing an incorrect output.
 
