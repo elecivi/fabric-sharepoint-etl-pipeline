@@ -223,7 +223,17 @@ This makes the notebook reusable for scheduled executions without requiring manu
 
 Only records matching the calculated previous-day date are retained.
 
-During development testing, the source workbook contained approximately 54,000 historical rows, while the daily filtered output contained approximately 200 rows.
+```python
+df_filtered = df[df["Calendar Date"] == target_date].copy()
+
+print("Data filtrata:", target_date.date())
+print("Righe prima del filtro:", len(df))
+print("Righe dopo il filtro:", len(df_filtered))
+
+display(df_filtered.head())
+```
+
+During development testing, the source workbook contained approximately 54,000 historical rows, while as a result of this filtering, the daily output contained approximately only 200 rows.
 
 ### Data Quality Validation
 
@@ -260,7 +270,23 @@ If these conditions are not satisfied, the transformation raises an error instea
 
 The validated dataframe is written to a new Excel workbook.
 
-The output workbook contains only the required business columns and records.
+```python
+df_output = df_filtered.copy()
+df_output.reset_index(drop=True, inplace=True)
+output_file = "/lakehouse/default/Files/Temp/AcquisitionTracking_Output.xlsx"
+
+df_output.to_excel(
+    output_file,
+    index=False,
+    sheet_name="Acquisition Tracking"
+)
+
+print("File Excel creato:", output_file)
+print("Righe esportate:", len(df_output))
+print("Colonne esportate:", len(df_output.columns))
+```
+
+I made sure to check that the output workbook contains only the required business columns and records.
 
 ### Excel Formatting
 
@@ -269,28 +295,77 @@ Excel-specific formatting is applied after the dataframe has been exported.
 This includes:
 
 - date formatting;
-- numeric formatting;
-- removal of unwanted currency formatting;
+  ```python
+  from openpyxl import load_workbook
+  
+  wb = load_workbook(output_file)
+  ws = wb["Acquisition Tracking"]
+
+  for cell in ws["A"][1:]:
+    cell.number_format = "DD-MM-YYYY"
+
+  wb.save(output_file)
+  ```
+
+- removal of unwanted currency formatting
+
+   ```python
+  colonne_senza_dollaro = [
+    "New Depositor",
+    "New Active",
+    "First Deposit Amt EUR",
+    "Second Deposit Amt EUR",
+    "Bet Qty",
+    "Bet Amt EUR",
+    "Active Players"
+   ]
+
+   headers = {cell.value: cell.column for cell in ws[1]}
+
+   for colonna in colonne_senza_dollaro:
+       numero_colonna = headers[colonna]
+
+    for row in range(2, ws.max_row + 1):
+        ws.cell(row=row, column=numero_colonna).number_format = "General"
+
+   wb.save(output_file)
+    ```
 - two-decimal formatting for selected numeric columns;
-- percentage formatting for margin values.
+    ```python
+   for row in range(2, ws.max_row + 1):
+       for col in range(8, 12):  # H, I, J, K
+           cell = ws.cell(row=row, column=col)
 
-The output values remain numeric rather than being converted to formatted text.
+        if isinstance(cell.value, (int, float)):
+            cell.value = round(cell.value, 2)
+            cell.number_format = "0.00"
 
-This allows Microsoft Excel to display numbers according to the user's regional settings.
+   wb.save(output_file)
+   ```
+- percentage formatting for margin values
+    ```python
+   ggr_margin_col = headers["GGR Margin"]
 
-For example, the same numeric value may appear as:
+   for row in range(2, ws.max_row + 1):
+       ws.cell(row=row, column=ggr_margin_col).number_format = "0.00%"
 
-```text
-80.52
-```
+   wb.save(output_file)
+   ```
+The output values remain numeric rather than being converted to formatted text
+- this allows Microsoft Excel to display numbers according to the user's regional settings, which was especially important in this project case, since the team was very international and used to different interfaces and visualisation rules
+- for example, the same numeric value may appear as:
 
-in an English Excel environment and:
+   ```text
+   80.52
+   ```
 
-```text
-80,52
-```
+   in an English Excel environment and:
 
-in a German Excel environment.
+   ```text
+   80,52
+   ```
+
+   in a German Excel environment.
 
 ## Technologies
 
